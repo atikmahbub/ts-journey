@@ -10,6 +10,7 @@ async function main() {
         role: "system",
         content: "You are a helpful AI tutor for TypeScript developers.",
       },
+      { role: "system", content: "Keep responses under 3 sentences." },
       {
         role: "user",
         content: question,
@@ -17,6 +18,7 @@ async function main() {
     ],
   });
 
+  console.log("Token usage:", response.usage);
   if (response.choices.length === 0) {
     throw new Error("No response from OpenAI API");
   }
