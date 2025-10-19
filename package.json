@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Journey to Ai Agent with TS",
   "type": "module",
-  "main": "index.js",
+  "main": "day1.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsx src/index.ts"
+    "start": "tsx src/day2.ts"
   },
   "author": "Atik Mahbub",
   "license": "ISC",
