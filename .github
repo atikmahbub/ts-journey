@@ -1,0 +1,101 @@
+# --- git quick push with emoji + colors (zsh) ---
+push() {
+  emulate -L zsh
+
+  # Colors
+  local RED="\033[31m" GREEN="\033[32m" YELLOW="\033[33m" CYAN="\033[36m" BOLD="\033[1m" RESET="\033[0m"
+
+  # Ensure we're in a git repo
+  git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+    echo "${RED}❌ Not a git repository${RESET}"
+    return 1
+  }
+
+  # Current branch
+  local branch
+  branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || {
+    echo "${RED}❌ Unable to detect branch${RESET}"
+    return 1
+  }
+
+  # Show short status
+  echo "${CYAN}${BOLD}• Changes:${RESET}"
+  git status -s
+
+  # Conventional types ↔ emoji
+  typeset -A EMOJI
+  EMOJI=(
+    feat "✨"  fix "🐛"   chore "🧹"  docs "📝"
+    refactor "♻️"  test "✅"  perf "⚡"  style "🎨"  ci "🤖"
+  )
+
+  # Auto-detect type from branch prefix (feat/*, fix/*, etc.)
+  local defaultType=""
+  case "$branch" in
+    feat/*) defaultType="feat" ;;
+    fix/*) defaultType="fix" ;;
+    chore/*) defaultType="chore" ;;
+    docs/*) defaultType="docs" ;;
+    refactor/*) defaultType="refactor" ;;
+    test/*) defaultType="test" ;;
+    perf/*) defaultType="perf" ;;
+    style/*) defaultType="style" ;;
+    ci/*) defaultType="ci" ;;
+  esac
+
+  echo
+  echo "${CYAN}${BOLD}• Commit type${RESET} (emoji auto-inserted)"
+  echo "   Options: feat fix chore docs refactor test perf style ci"
+  if [[ -n "$defaultType" ]]; then
+    echo "   (Press Enter to use auto: ${BOLD}$defaultType${RESET})"
+  else
+    echo "   (Press Enter to skip type/emoji)"
+  fi
+
+  local type
+  read "type?🔖 Type: "
+  [[ -z "$type" ]] && type="$defaultType"
+
+  # Ask for commit message
+  local msg
+  echo
+  read "msg?✍️  Commit message: "
+  if [[ -z "$msg" ]]; then
+    echo "${YELLOW}⚠️  Aborted: empty message.${RESET}"
+    return 1
+  fi
+
+  # Build final message with emoji prefix if valid type selected
+  local prefix=""
+  if [[ -n "$type" && -n "${EMOJI[$type]}" ]]; then
+    prefix="${EMOJI[$type]} ${type}: "
+  fi
+  local finalMsg="${prefix}${msg}"
+
+  # Stage everything
+  git add -A
+
+  # If nothing staged, exit gracefully
+  if git diff --cached --quiet; then
+    echo "${YELLOW}ℹ️  No changes to commit.${RESET}"
+    return 0
+  fi
+
+  # Commit
+  if git commit -m "$finalMsg"; then
+    echo "${GREEN}✅ Committed:${RESET} $finalMsg"
+  else
+    echo "${RED}❌ Commit failed${RESET}"
+    return 1
+  fi
+
+  # Push
+  echo "${CYAN}🚀 Pushing → origin/${branch}${RESET}"
+  if git push origin "$branch"; then
+    echo "${GREEN}✅ Push successful → origin/${branch}${RESET}"
+  else
+    echo "${RED}❌ Push failed${RESET}"
+    return 1
+  fi
+}
+# --- end: git quick push ---
