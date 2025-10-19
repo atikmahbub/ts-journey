@@ -2,6 +2,8 @@ import { openai } from "./config/openai.js";
 
 const question = process.argv.slice(2).join(" ") || "What is TypeScript?";
 
+//* DAY 1
+
 async function main() {
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
