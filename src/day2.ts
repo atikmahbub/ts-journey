@@ -1,6 +1,8 @@
 import { openai } from "./config/openai.js";
 import { getCurrency, getTime, getWeather } from "./tools/utils.js";
 
+//* DAY 2
+
 export const main = async () => {
   const question =
     process.argv.slice(2).join(" ") ||
