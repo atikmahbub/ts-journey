@@ -6,7 +6,7 @@
   "main": "day1.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsx src/day2.ts"
+    "start": "tsx src/day3.ts"
   },
   "author": "Atik Mahbub",
   "license": "ISC",
